@@ -22,7 +22,7 @@ client.once('ready', () => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return; // Ignorar mensajes de otros bots
   
-    const prefix = 'J'; // Define el prefijo como "J"
+    const prefix = '!'; // Define el prefijo para tus comandos
     if (!message.content.startsWith(prefix)) return; // Ignora mensajes sin el prefijo
   
     const args = message.content.slice(prefix.length).trim().split(/ +/); // Divide el mensaje en partes
@@ -41,7 +41,6 @@ client.on('messageCreate', async (message) => {
       message.reply(`El comando \`${commandName}\` no existe.`);
     }
   });
-  
   
 // Iniciar sesión en Discord
 client.login(process.env.BOT_TOKEN).catch((err) => {
@@ -96,3 +95,26 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+client.on('messageCreate', async (message) => {
+    if (message.author.bot) return; // Ignorar mensajes de otros bots
+  
+    const prefix = 'J'; // Define el prefijo como "J"
+    if (!message.content.startsWith(prefix)) return; // Ignora mensajes sin el prefijo
+  
+    const args = message.content.slice(prefix.length).trim().split(/ +/); // Divide el mensaje en partes
+    const commandName = args.shift().toLowerCase(); // Extrae el nombre del comando
+  
+    // Verifica si el comando existe en el objeto `commands`
+    if (commands[commandName]) {
+      try {
+        // Ejecuta el comando pasando el mensaje y los argumentos
+        commands[commandName](message, args);
+      } catch (error) {
+        console.error('Error ejecutando el comando:', error);
+        message.reply('Hubo un error al ejecutar el comando.');
+      }
+    } else {
+      message.reply(`El comando \`${commandName}\` no existe.`);
+    }
+  });
+  
