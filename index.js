@@ -22,7 +22,7 @@ client.once('ready', () => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return; // Ignorar mensajes de otros bots
   
-    const prefix = '!'; // Define el prefijo para tus comandos
+    const prefix = 'J'; // Define el prefijo como "J"
     if (!message.content.startsWith(prefix)) return; // Ignora mensajes sin el prefijo
   
     const args = message.content.slice(prefix.length).trim().split(/ +/); // Divide el mensaje en partes
@@ -41,6 +41,7 @@ client.on('messageCreate', async (message) => {
       message.reply(`El comando \`${commandName}\` no existe.`);
     }
   });
+  
   
 // Iniciar sesión en Discord
 client.login(process.env.BOT_TOKEN).catch((err) => {
