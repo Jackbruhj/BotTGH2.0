@@ -20,15 +20,28 @@ client.once('ready', () => {
 
 // Evento de mensajes para el bot
 client.on('messageCreate', async (message) => {
-  if (message.author.bot) return; // Ignorar mensajes de otros bots
-
-  if (message.content === '!ping') {
-    message.channel.send('¡Pong!');
-  }
-
-  // Otros comandos del bot aquí
-});
-
+    if (message.author.bot) return; // Ignorar mensajes de otros bots
+  
+    const prefix = '!'; // Define el prefijo para tus comandos
+    if (!message.content.startsWith(prefix)) return; // Ignora mensajes sin el prefijo
+  
+    const args = message.content.slice(prefix.length).trim().split(/ +/); // Divide el mensaje en partes
+    const commandName = args.shift().toLowerCase(); // Extrae el nombre del comando
+  
+    // Verifica si el comando existe en el objeto `commands`
+    if (commands[commandName]) {
+      try {
+        // Ejecuta el comando pasando el mensaje y los argumentos
+        commands[commandName](message, args);
+      } catch (error) {
+        console.error('Error ejecutando el comando:', error);
+        message.reply('Hubo un error al ejecutar el comando.');
+      }
+    } else {
+      message.reply(`El comando \`${commandName}\` no existe.`);
+    }
+  });
+  
 // Iniciar sesión en Discord
 client.login(process.env.BOT_TOKEN).catch((err) => {
   console.error('Error al iniciar sesión en Discord:', err);
