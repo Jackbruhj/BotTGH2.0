@@ -448,62 +448,70 @@ battle: (message, args) => {
 },
 
 inicio: async (message, args) => {
-    if (!hasPermission(message, 'start')) {
-        return message.reply('No tienes permiso para usar este comando.');
+    if (!hasPermission(message, 'inicio')) {
+        return message.reply('❌ No tienes permiso para usar este comando.');
     }
 
     const [usuario, intervalo] = args;
 
+    // Validar argumentos
     if (!usuario || isNaN(intervalo)) {
-        return message.reply('Uso incorrecto. Ejemplo: `!J start @Usuario 3000` (intervalo en milisegundos)');
+        return message.reply('❌ Uso incorrecto. Ejemplo: `!J inicio @Usuario 3000` (intervalo en milisegundos)');
     }
 
-    const cleanedUsuario = usuario.replace(/^<@!?(\d+)>$/, '$1');
+    const cleanedUsuario = usuario.replace(/^<@!?(\d+)>$/, '$1'); // Extraer solo el ID del usuario mencionado
     const member = message.guild.members.cache.get(cleanedUsuario);
 
     if (!member) {
-        return message.reply('No se encontró el usuario mencionado.');
+        return message.reply('❌ No se encontró el usuario mencionado en este servidor.');
     }
 
+    // Verificar si ya existe un intervalo activo para el usuario
     if (batallasActivas[cleanedUsuario]) {
-        return message.reply('Ya hay un intervalo activo para este usuario. Usa `!J stop @Usuario` para detenerlo.');
+        return message.reply('⚠️ Ya hay un intervalo activo para este usuario. Usa `!J stop @Usuario` para detenerlo.');
     }
 
-    // Crear el intervalo para añadir y quitar puntos
-    const intervaloId = setInterval(() => {
-        const puntosAleatorios = Math.floor(Math.random() * 20) - 10; // Genera puntos aleatorios entre -10 y 10
+    try {
+        // Crear el intervalo para modificar puntos
+        const intervaloId = setInterval(() => {
+            const puntosAleatorios = Math.floor(Math.random() * 21) - 10; // Genera puntos aleatorios entre -10 y 10
 
-        const fetchQuery = 'SELECT discord_usuario, puntos_heroe FROM usuarios WHERE discord_usuario = ?';
-
-        db.query(fetchQuery, [member.user.username], (err, rows) => {
-            if (err) {
-                console.error(err);
-                return message.reply('Hubo un error al obtener los datos del usuario.');
-            }
-            if (rows.length === 0) {
-                return message.reply(`No se encontró el usuario con nombre de Discord: ${member.user.username}`);
-            }
-
-            const { puntos_heroe } = rows[0];
-            const nuevosPuntos = puntos_heroe + puntosAleatorios;
-
-            // Actualizar los puntos del usuario
-            const updateQuery = 'UPDATE usuarios SET puntos_heroe = ? WHERE discord_usuario = ?';
-            db.query(updateQuery, [nuevosPuntos, member.user.username], (err) => {
+            // Verificar si el usuario existe en la base de datos
+            const fetchQuery = 'SELECT discord_usuario, puntos_heroe FROM usuarios WHERE discord_usuario = ?';
+            db.query(fetchQuery, [member.user.username], (err, rows) => {
                 if (err) {
-                    console.error(err);
-                    return message.reply('Hubo un error al actualizar los puntos del usuario.');
+                    console.error('Error al obtener datos del usuario:', err);
+                    return message.reply('❌ Hubo un error al obtener los datos del usuario.');
                 }
 
-                console.log(`Puntos actualizados para ${member.user.username}: ${nuevosPuntos}`);
+                if (rows.length === 0) {
+                    return message.reply(`❌ No se encontró al usuario "${member.user.username}" en la base de datos.`);
+                }
+
+                const { puntos_heroe } = rows[0];
+                const nuevosPuntos = puntos_heroe + puntosAleatorios;
+
+                // Actualizar puntos del usuario
+                const updateQuery = 'UPDATE usuarios SET puntos_heroe = ? WHERE discord_usuario = ?';
+                db.query(updateQuery, [nuevosPuntos, member.user.username], (err) => {
+                    if (err) {
+                        console.error('Error al actualizar puntos del usuario:', err);
+                        return message.reply('❌ Hubo un error al actualizar los puntos del usuario.');
+                    }
+
+                    console.log(`✅ Puntos actualizados para ${member.user.username}: ${nuevosPuntos}`);
+                });
             });
-        });
-    }, parseInt(intervalo));
+        }, parseInt(intervalo));
 
-    batallasActivas[cleanedUsuario] = intervaloId;
+        // Guardar el intervalo activo
+        batallasActivas[cleanedUsuario] = intervaloId;
 
-    message.reply(`⏳ Comenzó a modificar los puntos de "${member.user.username}" cada ${intervalo} ms.`);
+        message.reply(`⏳ Comenzó a modificar los puntos de "${member.user.username}" cada ${intervalo} ms.`);
+    } catch (error) {
+        console.error('Error en el comando inicio:', error);
+        message.reply('❌ Ocurrió un error inesperado. Inténtalo nuevamente.');
+    }
 },
-   
     
 };
