@@ -2,13 +2,37 @@ const { Client, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
 const commands = require('./commands');
 const { generateUserImage } = require('./generateImage');
-const mysql = require('mysql2');  // Usamos mysql2 sin la parte de promesas aquí
+const mysql = require('mysql2'); // Usamos mysql2 sin la parte de promesas aquí
 const express = require('express');
 
 const app = express();
 
 // Configuración del puerto (Clever Cloud asignará un puerto dinámicamente)
 const PORT = process.env.PORT || 8080;
+
+// Configuración del cliente Discord.js
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+
+// Evento listo (cuando el bot se conecta correctamente)
+client.once('ready', () => {
+  console.log(`¡Bot conectado como ${client.user.tag}!`);
+});
+
+// Evento de mensajes para el bot
+client.on('messageCreate', async (message) => {
+  if (message.author.bot) return; // Ignorar mensajes de otros bots
+
+  if (message.content === '!ping') {
+    message.channel.send('¡Pong!');
+  }
+
+  // Otros comandos del bot aquí
+});
+
+// Iniciar sesión en Discord
+client.login(process.env.DISCORD_TOKEN).catch((err) => {
+  console.error('Error al iniciar sesión en Discord:', err);
+});
 
 // Configuración de la base de datos
 const db = mysql.createConnection({
