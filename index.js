@@ -30,7 +30,7 @@ client.on('messageCreate', async (message) => {
 });
 
 // Iniciar sesión en Discord
-client.login(process.env.DISCORD_TOKEN).catch((err) => {
+client.login(process.env.BOT_TOKEN).catch((err) => {
   console.error('Error al iniciar sesión en Discord:', err);
 });
 
