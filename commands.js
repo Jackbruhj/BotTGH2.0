@@ -447,7 +447,7 @@ battle: (message, args) => {
     
 },
 
-start: async (message, args) => {
+inicio: async (message, args) => {
     if (!hasPermission(message, 'start')) {
         return message.reply('No tienes permiso para usar este comando.');
     }
