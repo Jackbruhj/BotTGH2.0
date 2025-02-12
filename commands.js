@@ -394,7 +394,7 @@ battle: (message, args) => {
             }
     
             const { puntos_heroe, rango } = rows[0];
-            const nuevosPuntos = puntos_heroe + 30;
+            const nuevosPuntos = puntos_heroe + 10;
     
             // Determina el nuevo rango y los puntos necesarios
             let nuevoRango = rango;
