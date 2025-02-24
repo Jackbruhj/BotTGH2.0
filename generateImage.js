@@ -90,8 +90,8 @@ async function generateUserImage(discord_usuario, roblox_usuario, puntos_heroe, 
         ctx.lineWidth = 6;
         ctx.strokeStyle = '#000000';
         ctx.fillStyle = '#FFD700'; // Color dorado para resaltar las victorias
-        ctx.strokeText(`Victorias: ${wins}`, 700, 70);
-        ctx.fillText(`Victorias: ${wins}`, 700, 70);
+        ctx.strokeText(`Victorias: ${wins}`, 650, 60);
+        ctx.fillText(`Victorias: ${wins}`, 650, 60);
 
         return canvas.toBuffer('image/png');
     } catch (error) {
