@@ -2,7 +2,7 @@ const { createCanvas, loadImage } = require('@napi-rs/canvas');
 const path = require('path');
 const { loadFonts } = require('./fonts'); // Importar la función para cargar las fuentes
 
-async function generateUserImage(discord_usuario, roblox_usuario, puntos_heroe, puntos_necesarios, avatarURL, rango) {
+async function generateUserImage(discord_usuario, roblox_usuario, puntos_heroe, puntos_necesarios, avatarURL, rango, wins) {
     try {
         // Mapear los rangos con las plantillas correspondientes
         const rangoTemplates = {
@@ -26,12 +26,6 @@ async function generateUserImage(discord_usuario, roblox_usuario, puntos_heroe, 
             throw new Error(`Error al cargar la plantilla: ${err.message}`);
         });
 
-        // Corregir el nombre de Discord, eliminar solo los símbolos innecesarios
-        const cleanDiscordUser = discord_usuario.replace(/^<@!?(\d+)>$/, 'Desconocido').trim();
-
-        // Si el nombre no tiene el formato incorrecto, usar el nombre directamente
-        const discordName = discord_usuario.startsWith('@') ? discord_usuario : `@${cleanDiscordUser}`;
-
         // Crear canvas con dimensiones de la plantilla
         const canvas = createCanvas(template.width, template.height);
         const ctx = canvas.getContext('2d');
@@ -45,29 +39,27 @@ async function generateUserImage(discord_usuario, roblox_usuario, puntos_heroe, 
         });
 
         // Configuración del círculo
-        const circleX = 115; // Nueva posición X del centro del círculo
-        const circleY = 130; // Nueva posición Y del centro del círculo
-        const circleRadius = 80; // Nuevo radio del círculo
-
-        // Configuración de la imagen
-        const imageX = 34; // Nueva posición X de la imagen dentro del círculo
-        const imageY = 49; // Nueva posición Y de la imagen dentro del círculo
-        const imageWidth = 160; // Nuevo ancho de la imagen
-        const imageHeight = 160; // Nueva altura de la imagen
+        const circleX = 115;
+        const circleY = 130;
+        const circleRadius = 80;
+        const imageX = 34;
+        const imageY = 49;
+        const imageWidth = 160;
+        const imageHeight = 160;
 
         ctx.save();
         ctx.beginPath();
-        ctx.arc(circleX, circleY, circleRadius, 0, Math.PI * 2, true); // Configurar el círculo
+        ctx.arc(circleX, circleY, circleRadius, 0, Math.PI * 2, true);
         ctx.closePath();
         ctx.clip();
-        ctx.drawImage(avatar, imageX, imageY, imageWidth, imageHeight); // Configurar la imagen
+        ctx.drawImage(avatar, imageX, imageY, imageWidth, imageHeight);
         ctx.restore();
 
         // Agregar texto de Discord y Roblox
-        ctx.font = '28px "Lexend", sans-serif'; // Usa la fuente registrada previamente
-        ctx.lineWidth = 5;                      // Define el grosor del contorno
-        ctx.strokeStyle = '#000000';            // Color del contorno
-        ctx.fillStyle = '#ffffff';              // Color del texto
+        ctx.font = '28px "Lexend", sans-serif';
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = '#000000';
+        ctx.fillStyle = '#ffffff';
         ctx.strokeText(`Usuario: ${discord_usuario}`, 220, 88);
         ctx.fillText(`Usuario: ${discord_usuario}`, 220, 88);
 
@@ -83,15 +75,23 @@ async function generateUserImage(discord_usuario, roblox_usuario, puntos_heroe, 
         const textoWidth = ctx.measureText(texto).width;
         const x = 380;
         const y = 167;
-        ctx.strokeText(texto, x - textoWidth / 2, y); // Ajustar para que esté centrado
-        ctx.fillText(texto, x - textoWidth / 2, y); // Ajustar para que esté centrado
+        ctx.strokeText(texto, x - textoWidth / 2, y);
+        ctx.fillText(texto, x - textoWidth / 2, y);
 
-        ctx.font = '24px sans-serif';           // Establece la fuente
-        ctx.lineWidth = 5;                      // Grosor del contorno
-        ctx.strokeStyle = '#000000';            // Color del contorno
-        ctx.fillStyle = '#ffffff';              // Color del texto
+        ctx.font = '24px sans-serif';
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = '#000000';
+        ctx.fillStyle = '#ffffff';
         ctx.strokeText(`Siguiente rango en: ${puntos_necesarios} puntos`, 220, 250);
         ctx.fillText(`Siguiente rango en: ${puntos_necesarios} puntos`, 220, 250);
+
+        // 🔹 **Nuevo: Mostrar Wins en la imagen con contorno negro**
+        ctx.font = '30px "Lexend", bold sans-serif';
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = '#000000';
+        ctx.fillStyle = '#FFD700'; // Color dorado para resaltar las victorias
+        ctx.strokeText(`Victorias: ${wins}`, 220, 300);
+        ctx.fillText(`Victorias: ${wins}`, 220, 300);
 
         return canvas.toBuffer('image/png');
     } catch (error) {
