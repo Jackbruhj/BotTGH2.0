@@ -379,7 +379,7 @@ battle: (message, args) => {
         }
     
         const query = `
-            SELECT discord_usuario, puntos_heroe, rango
+            SELECT discord_usuario, puntos_heroe, rango, wins
             FROM usuarios
             WHERE discord_usuario = ?
         `;
@@ -393,8 +393,9 @@ battle: (message, args) => {
                 return message.reply(`No se encontró un usuario con Discord: ${ganador.tag}`);
             }
     
-            const { puntos_heroe, rango } = rows[0];
+            const { puntos_heroe, rango, wins } = rows[0];
             const nuevosPuntos = puntos_heroe + 10;
+            const nuevasVictorias = wins + 1; // Incrementa la cantidad de victorias
     
             // Determina el nuevo rango y los puntos necesarios
             let nuevoRango = rango;
@@ -425,19 +426,20 @@ battle: (message, args) => {
     
             const updateQuery = `
                 UPDATE usuarios
-                SET puntos_heroe = ?, rango = ?, puntos_necesarios = ?
+                SET puntos_heroe = ?, rango = ?, wins = ?, puntos_necesarios = ?
                 WHERE discord_usuario = ?
             `;
     
-            db.query(updateQuery, [nuevosPuntos, nuevoRango, puntosParaSiguiente, ganador.tag], (err) => {
+            db.query(updateQuery, [nuevosPuntos, nuevoRango, nuevasVictorias, puntosParaSiguiente, ganador.tag], (err) => {
                 if (err) {
-                    console.error('Error al actualizar los puntos:', err.message);
+                    console.error('Error al actualizar los puntos y victorias:', err.message);
                     return message.reply('Hubo un error al actualizar los puntos del ganador.');
                 }
     
                 message.reply(`🎉 ¡Felicidades a ${ganador.tag} por ganar la batalla contra ${ganador.tag === usuario1 ? usuario2 : usuario1}! 🎉\n` +
                     `- **Puntos actuales:** ${nuevosPuntos}\n` +
                     `- **Rango actual:** ${nuevoRango}\n` +
+                    `- **Victorias totales:** ${nuevasVictorias}\n` +
                     `- **Puntos para el siguiente rango:** ${puntosParaSiguiente}`);
     
                 delete batallasActivas[canalId];
@@ -558,6 +560,47 @@ detener: (message, args) => {
     delete intervalosActivos[discordUsuario];
 
     message.reply(`✅ Se ha detenido el intervalo de puntos para el usuario "${discordUsuario}".`);
-}
+},
+
+resetwins: (message, args) => {
+    // Verifica si el usuario tiene permiso para usar este comando
+    if (!hasPermission(message, 'resetwins')) {
+        return message.reply('No tienes permiso para usar este comando.');
+    }
+
+    // Obtiene el usuario mencionado
+    const usuarioMencionado = message.mentions.users.first();
+
+    if (usuarioMencionado) {
+        // Si se menciona un usuario, se resetean sus victorias
+        const query = `UPDATE usuarios SET wins = 0 WHERE discord_usuario = ?`;
+
+        db.query(query, [usuarioMencionado.tag], (err, result) => {
+            if (err) {
+                console.error('Error al resetear wins:', err.message);
+                return message.reply('Hubo un error al resetear las victorias del usuario.');
+            }
+
+            if (result.affectedRows === 0) {
+                return message.reply(`No se encontró un usuario con Discord: ${usuarioMencionado.tag}`);
+            }
+
+            message.reply(`✅ Las victorias de ${usuarioMencionado.tag} han sido reseteadas a 0.`);
+        });
+    } else {
+        // Si no se menciona a nadie, se resetean las victorias de todos los usuarios
+        const query = `UPDATE usuarios SET wins = 0`;
+
+        db.query(query, (err, result) => {
+            if (err) {
+                console.error('Error al resetear wins global:', err.message);
+                return message.reply('Hubo un error al resetear las victorias de todos los usuarios.');
+            }
+
+            message.reply(`✅ Se han reseteado las victorias de todos los usuarios.`);
+        });
+    }
+},
+
 };
 
