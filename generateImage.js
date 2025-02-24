@@ -1,6 +1,15 @@
 const { createCanvas, loadImage, registerFont } = require('@napi-rs/canvas');
 const path = require('path');
 const { loadFonts } = require('./fonts'); // Asegurar que las fuentes están cargadas
+console.log({
+    discord_usuario,
+    roblox_usuario,
+    puntos_heroe,
+    puntos_necesarios,
+    avatarURL,
+    rango,
+    wins
+});
 
 async function generateUserImage(discord_usuario, roblox_usuario, puntos_heroe, puntos_necesarios, avatarURL, rango, wins) {
     try {
