@@ -86,6 +86,7 @@ async function generateUserImage(discord_usuario, roblox_usuario, puntos_heroe, 
         ctx.fillText(`Siguiente rango en: ${puntos_necesarios} puntos`, 220, 250);
 
         // 🔹 **Nuevo: Mostrar Wins en la imagen con contorno negro**
+        const winsText = String(wins);
         ctx.font = '30px "Lexend", bold sans-serif';
         ctx.lineWidth = 6;
         ctx.strokeStyle = '#000000';
