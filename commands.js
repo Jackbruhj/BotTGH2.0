@@ -238,7 +238,7 @@ module.exports = {
         }
     
         const query = `
-            SELECT discord_usuario, roblox_usuario, puntos_heroe, puntos_necesarios, rango 
+            SELECT discord_usuario, roblox_usuario, puntos_heroe, puntos_necesarios, rango, wins 
             FROM usuarios 
             WHERE discord_usuario = ?
         `;
