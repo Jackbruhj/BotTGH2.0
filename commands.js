@@ -269,7 +269,8 @@ module.exports = {
                     puntos_heroe,
                     puntos_necesarios,
                     avatarURL,
-                    rango // Aquí ahora se pasa el rango
+                    rango,
+                    wins // Aquí ahora se pasa el rango
                 );
     
                 // Crear un attachment con la imagen generada
