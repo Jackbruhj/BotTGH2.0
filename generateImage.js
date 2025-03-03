@@ -86,13 +86,12 @@ async function generateUserImage(discord_usuario, roblox_usuario, puntos_heroe, 
         ctx.fillText(`Siguiente rango en: ${puntos_necesarios} puntos`, 220, 250);
 
         // 🔹 **Nuevo: Mostrar Wins en la imagen con contorno negro**
-        const winsText = String(wins);
         ctx.font = '30px "Lexend", bold sans-serif';
         ctx.lineWidth = 6;
         ctx.strokeStyle = '#000000';
         ctx.fillStyle = '#FFFFFF'; // Color dorado para resaltar las victorias
-        ctx.strokeText(`Victorias: ${winsText}`, 620, 50);
-        ctx.fillText(`Victorias: ${winsText}`, 620, 50);
+        ctx.strokeText(`Victorias: ${wins}`, 620, 50);
+        ctx.fillText(`Victorias: ${wins}`, 620, 50);
 
         return canvas.toBuffer('image/png');
     } catch (error) {

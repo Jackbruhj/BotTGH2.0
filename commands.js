@@ -256,7 +256,7 @@ module.exports = {
             }
     
             // Extraer datos del usuario
-            const { discord_usuario, roblox_usuario, puntos_heroe, puntos_necesarios, rango } = rows[0];
+            const { discord_usuario, roblox_usuario, puntos_heroe, puntos_necesarios, rango, wins } = rows[0];
             const avatarURL = message.mentions.users.size > 0
                 ? message.mentions.users.first().displayAvatarURL({ extension: 'png', size: 128 })
                 : message.author.displayAvatarURL({ extension: 'png', size: 128 });
