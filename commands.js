@@ -288,7 +288,7 @@ module.exports = {
     
     leaderboard: async (message, args) => {
         // Verificar si el usuario pidió "wins" o "puntos_heroe"
-        const category = args[0] === 'wins' ? 'wins' : 'puntos_heroe';
+        const category = args[0] === 'wins' ? 'wins' : 'puntos';
     
         const query = `
             SELECT discord_usuario, ${category}

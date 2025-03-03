@@ -20,7 +20,7 @@ async function generateLeaderboardImage(rows, category) {
     ctx.textAlign = 'center';
     ctx.fillText(titleText, textX, textY);
 
-    // Dibujar nombres y valores
+    // Configuración de nombres y valores
     ctx.font = 'bold 24px Arial';
     ctx.textAlign = 'left';
     ctx.lineWidth = 2;
@@ -31,8 +31,8 @@ async function generateLeaderboardImage(rows, category) {
     const x = 30;
 
     rows.forEach((row, index) => {
-        const value = category === 'wins' ? row.wins : row.puntos_heroe;
-        const text = `${index + 1}. ${row.discord_usuario} - ${value} ${category}`;
+        const value = category === 'wins' ? `${row.wins} wins` : `${row.puntos_heroe}`;
+        const text = `${index + 1}. ${row.discord_usuario} - ${value}`;
 
         ctx.strokeText(text, x, y);
         ctx.fillText(text, x, y);
