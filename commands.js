@@ -287,10 +287,13 @@ module.exports = {
     },
     
     leaderboard: async (message, args) => {
+        // Verificar si el usuario pidió "wins" o "puntos_heroe"
+        const category = args[0] === 'wins' ? 'wins' : 'puntos_heroe';
+    
         const query = `
-            SELECT discord_usuario, puntos_heroe 
+            SELECT discord_usuario, ${category}
             FROM usuarios 
-            ORDER BY puntos_heroe DESC 
+            ORDER BY ${category} DESC 
             LIMIT 10
         `;
     
@@ -305,7 +308,7 @@ module.exports = {
             }
     
             try {
-                const imageBuffer = await generateLeaderboardImage(rows);
+                const imageBuffer = await generateLeaderboardImage(rows, category);
     
                 const { AttachmentBuilder } = require('discord.js');
                 const attachment = new AttachmentBuilder(imageBuffer, { name: 'leaderboard.png' });
@@ -317,6 +320,7 @@ module.exports = {
             }
         });
     },
+    
 // Objeto para almacenar las batallas activas
 
 battle: (message, args) => {

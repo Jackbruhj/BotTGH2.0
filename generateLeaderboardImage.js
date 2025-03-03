@@ -1,7 +1,7 @@
 const { createCanvas, loadImage } = require('canvas');
 const path = require('path');
 
-async function generateLeaderboardImage(rows) {
+async function generateLeaderboardImage(rows, category) {
     const templatePath = path.join(__dirname, 'assets', 'leaderboard_template.png');
     const template = await loadImage(templatePath);
 
@@ -10,38 +10,37 @@ async function generateLeaderboardImage(rows) {
 
     ctx.drawImage(template, 0, 0);
 
-    // Title
-    const textX = canvas.width / 2; // Centra el texto horizontalmente
-const textY = 585; // La posición vertical permanece fija
+    // Configuración de título según la categoría
+    const titleText = category === 'wins' ? 'Top 10 por Victorias' : 'Top 10 por Puntos';
+    const textX = canvas.width / 2;
+    const textY = 585;
 
-ctx.font = 'bold 24px Arial';
-ctx.fillStyle = '#ffffff';
-ctx.textAlign = 'center'; // Centrar el texto horizontalmente
-ctx.fillText('Top 10 Mejores Miembros', textX, textY);
-  // Usernames
-ctx.font = 'bold 24px Arial';
-ctx.textAlign = 'left';
-ctx.lineWidth = 2; // Grosor del contorno
-ctx.strokeStyle = '#000000'; // Color del contorno
-ctx.fillStyle = '#ffffff'; // Color de relleno del texto
+    ctx.font = 'bold 24px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.fillText(titleText, textX, textY);
 
-let y = 40;
-const x = 30;
+    // Dibujar nombres y valores
+    ctx.font = 'bold 24px Arial';
+    ctx.textAlign = 'left';
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#000000';
+    ctx.fillStyle = '#ffffff';
 
-rows.forEach((row, index) => {
-    const text = `${index + 1}. ${row.discord_usuario} ${row.puntos_heroe} puntos `;
-    
-    // Dibuja el contorno del texto primero
-    ctx.strokeText(text, x, y);
-    
-    // Rellena el texto con el color principal
-    ctx.fillText(text, x, y);
-    
-    y += 55;
-});
+    let y = 40;
+    const x = 30;
 
-return canvas.toBuffer();
+    rows.forEach((row, index) => {
+        const value = category === 'wins' ? row.wins : row.puntos_heroe;
+        const text = `${index + 1}. ${row.discord_usuario} - ${value} ${category}`;
 
+        ctx.strokeText(text, x, y);
+        ctx.fillText(text, x, y);
+
+        y += 55;
+    });
+
+    return canvas.toBuffer();
 }
 
-module.exports = generateLeaderboardImage; // Exportación correcta
+module.exports = generateLeaderboardImage;
